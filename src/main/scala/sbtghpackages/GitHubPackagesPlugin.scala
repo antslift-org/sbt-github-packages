@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Daniel Spiewak
+ * Copyright 2021 Antslift
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,8 @@ object GitHubPackagesPlugin extends AutoPlugin {
     type TokenSource = sbtghpackages.TokenSource
     val TokenSource = sbtghpackages.TokenSource
 
-    implicit class GHPackagesResolverSyntax(val resolver: Resolver.type) extends AnyVal {
+    implicit class GHPackagesResolverSyntax(val resolver: Resolver.type)
+        extends AnyVal {
       def githubPackages(owner: String, repo: String = "_"): MavenRepository =
         realm(owner, repo) at s"https://maven.pkg.github.com/$owner/$repo"
     }
@@ -42,17 +43,17 @@ object GitHubPackagesPlugin extends AutoPlugin {
 
   val authenticationSettings = Seq(
     githubTokenSource := TokenSource.Environment("GITHUB_TOKEN"),
-
     credentials += {
       val src = githubTokenSource.value
-      inferredGitHubCredentials("_", src) match {   // user is ignored by GitHub, so just use "_"
+      inferredGitHubCredentials("_", src) match { // user is ignored by GitHub, so just use "_"
         case Some(creds) =>
           creds
 
         case None =>
           sys.error(s"unable to locate a valid GitHub token from $src")
       }
-    })
+    }
+  )
 
   val packagePublishSettings = Seq(
     githubPublishTo := {
@@ -61,17 +62,17 @@ object GitHubPackagesPlugin extends AutoPlugin {
       val back = for {
         owner <- githubOwner.?.value
         repo <- githubRepository.?.value
-      } yield "GitHub Package Registry" at s"https://maven.pkg.github.com/$owner/$repo"
+      } yield
+        "GitHub Package Registry" at s"https://maven.pkg.github.com/$owner/$repo"
 
-      back foreach { _ =>
-        if (!ms) {
-          sys.error("GitHub Packages does not support Ivy-style publication")
-        }
-      }
+//      back foreach { _ =>
+//        if (!ms) {
+//          sys.error("GitHub Packages does not support Ivy-style publication")
+//        }
+//      }
 
       back
     },
-
     publishTo := {
       val suppress = githubSuppressPublicationWarning.value
       val log = streams.value.log
@@ -88,18 +89,19 @@ object GitHubPackagesPlugin extends AutoPlugin {
         publishTo.value
       }
     },
-
     resolvers ++= githubOwner.?.value.toSeq.map(Resolver.githubPackages(_)),
-
     scmInfo := {
       val back = for {
         owner <- githubOwner.?.value
         repo <- githubRepository.?.value
-      } yield ScmInfo(url(s"https://github.com/$owner/$repo"), s"scm:git@github.com:$owner/$repo.git")
+      } yield
+        ScmInfo(
+          url(s"https://github.com/$owner/$repo"),
+          s"scm:git@github.com:$owner/$repo.git"
+        )
 
       back.orElse(scmInfo.value)
     },
-
     homepage := {
       val back = for {
         owner <- githubOwner.?.value
@@ -108,16 +110,15 @@ object GitHubPackagesPlugin extends AutoPlugin {
 
       back.orElse(homepage.value)
     },
-
     pomIncludeRepository := (_ => false),
-    publishMavenStyle := true) ++
+    publishMavenStyle := true
+  ) ++
     authenticationSettings
 
   def resolveTokenSource(tokenSource: TokenSource): Option[String] = {
     tokenSource match {
       case TokenSource.Or(primary, secondary) =>
-        resolveTokenSource(primary).orElse(
-          resolveTokenSource(secondary))
+        resolveTokenSource(primary).orElse(resolveTokenSource(secondary))
 
       case TokenSource.Environment(variable) =>
         sys.env.get(variable)
@@ -127,13 +128,17 @@ object GitHubPackagesPlugin extends AutoPlugin {
     }
   }
 
-  def inferredGitHubCredentials(user: String, tokenSource: TokenSource): Option[Credentials] = {
+  def inferredGitHubCredentials(
+    user: String,
+    tokenSource: TokenSource
+  ): Option[Credentials] = {
     resolveTokenSource(tokenSource) map { token =>
       Credentials(
         "GitHub Package Registry",
         "maven.pkg.github.com",
         user,
-        token)
+        token
+      )
     }
   }
 

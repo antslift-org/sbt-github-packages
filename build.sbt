@@ -16,14 +16,15 @@
 
 name := "sbt-github-packages"
 
-ThisBuild / baseVersion := "0.5"
+ThisBuild / baseVersion := "0.6"
 
-ThisBuild / organization := "com.codecommit"
-ThisBuild / publishGithubUser := "djspiewak"
-ThisBuild / publishFullName := "Daniel Spiewak"
+ThisBuild / organization := "com.antslift"
+ThisBuild / organizationName := "Antslift"
+ThisBuild / publishGithubUser := "weipingc"
+ThisBuild / publishFullName := "Weiping Chen"
 
-ThisBuild / sbtPlugin := true
-ThisBuild / sbtVersion := "1.3.3"
+ThisBuild / sbtVersion := "1.9.6"
+sbtPlugin := true
 
 enablePlugins(SbtPlugin)
 
@@ -31,11 +32,25 @@ homepage := Some(url("https://github.com/djspiewak/sbt-github-packages"))
 
 scmInfo := Some(
   ScmInfo(
-    url("https://github.com/djspiewak/sbt-github-packages"),
-    "scm:git@github.com:djspiewak/sbt-github-packages.git"))
+    url("https://github.com/antslift-org/sbt-github-packages"),
+    "scm:git@github.com:antslift-org/sbt-github-packages.git"
+  )
+)
 
 developers := List(
-  Developer(id="djspiewak", name="Daniel Spiewak", email="djspiewak@gmail.com", url=url("https://github.com/djspiewak")))
+  Developer(
+    id = "djspiewak",
+    name = "Daniel Spiewak",
+    email = "djspiewak@gmail.com",
+    url = url("https://github.com/djspiewak")
+  ),
+  Developer(
+    id = "weipingc",
+    name = "Weiping Chen",
+    email = "weiping.chen@gmail.com",
+    url = url("https://github.com/weipingc")
+  )
+)
 
 publishMavenStyle := true
 

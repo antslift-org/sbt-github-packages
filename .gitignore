@@ -3,5 +3,8 @@ target/
 # vim
 *.sw?
 
+.idea
+.bsp
+
 # Ignore [ce]tags files
 tags
